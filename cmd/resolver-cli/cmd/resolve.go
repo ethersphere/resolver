@@ -18,13 +18,13 @@ func (c *command) initResolveCmd() {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			// Parse arguments:
 			if len(args) != 1 {
-				return errors.New("Error: expected single argument, name to resolve")
+				return errors.New("Expected single argument: name to resolve")
 			}
 			name := args[0]
 
 			// TODO: handle this in the resolver code
 			if !strings.HasSuffix(name, "eth") {
-				return errors.New("Error: not a valid ENS name")
+				return errors.New("Not a valid ENS name")
 			}
 
 			mr := resolver.NewMultiResolver()

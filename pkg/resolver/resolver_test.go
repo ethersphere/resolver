@@ -111,16 +111,16 @@ func TestResolverConnectENS(t *testing.T) {
 			res, err := mr.ConnectENS()
 			if tc.expectFail {
 				if err == nil {
-					t.Fatalf("Error: expected failure")
+					t.Fatalf("Expected failure")
 				}
 				return
 			}
 
 			if err != nil {
-				t.Fatalf("Error connecting to ENS, error: %v", err)
+				t.Fatalf("Could not connect to ENS, error: %v", err)
 			}
 			if !res.IsConnected() {
-				t.Fatalf("Error connecting to ENS endpoint: IsConnected() is false")
+				t.Fatalf("Function IsConnected returned False")
 			}
 
 			// Find first endpoint that does not fail:
@@ -143,6 +143,6 @@ func TestResolverConnectRNS(t *testing.T) {
 	mr := resolver.NewMultiResolver()
 	_, err := mr.ConnectRNS()
 	if err == nil {
-		t.Fatalf("Error: function not implemented")
+		t.Fatalf("Function not implemented")
 	}
 }

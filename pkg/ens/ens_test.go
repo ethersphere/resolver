@@ -35,13 +35,13 @@ func TestConnect(t *testing.T) {
 			err := res.Connect()
 			if tc.shouldFail {
 				if err == nil {
-					t.Fatalf("Error: test should fail")
+					t.Fatalf("Test should fail")
 				}
 				return
 			}
 
 			if !res.IsConnected() {
-				t.Fatalf("Error: isConnected should be true")
+				t.Fatalf("Function isConnected should return True")
 			}
 			wantEndpoint := res.Endpoint()
 			gotEndpoint := tc.endpoint
