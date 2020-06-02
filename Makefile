@@ -3,7 +3,7 @@ GOLANGCI_LINT ?= golangci-lint
 
 LDFLAGS ?= -s -w
 ifdef COMMIT
-LDFLAGS += -X github.com/ethersphere/bee.commit="$(COMMIT)"
+LDFLAGS += -X github.com/ethersphere/resolver.commit="$(COMMIT)"
 endif
 
 .PHONY: all
