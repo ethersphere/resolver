@@ -47,7 +47,6 @@ func (res *Resolver) IsConnected() (ok bool) {
 }
 
 // Resolve will try to resolve an ENS name into an address.
-func (res *Resolver) Resolve(name string) (adr common.Address, err error) {
-	adr, err = ens.Resolve(res.client, name)
-	return
+func (res *Resolver) Resolve(name string) (common.Address, error) {
+	return ens.Resolve(res.client, name)
 }

@@ -17,12 +17,12 @@ var (
 	NewCommand = newCommand
 
 	// Avoid unused linter errors until functions are used:
-	_ = WithConfgFile
+	_ = WithConfigFile
 	_ = WithInput
 	_ = WithErrorOutput
 )
 
-func WithConfgFile(f string) func(c *Command) {
+func WithConfigFile(f string) func(c *Command) {
 	return func(c *Command) {
 		c.configFile = f
 	}

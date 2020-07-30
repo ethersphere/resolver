@@ -8,7 +8,7 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/paxthemax/resolver/pkg/ens"
+	"github.com/ethersphere/resolver/pkg/ens"
 )
 
 const (

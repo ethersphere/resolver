@@ -10,7 +10,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/paxthemax/resolver/cmd/resolver-cli/cmd"
+	"github.com/ethersphere/resolver/cmd/resolver-cli/cmd"
 )
 
 func TestMain(m *testing.M) {

@@ -8,7 +8,7 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/paxthemax/resolver/pkg/resolver"
+	"github.com/ethersphere/resolver/pkg/resolver"
 	"github.com/spf13/cobra"
 )
 

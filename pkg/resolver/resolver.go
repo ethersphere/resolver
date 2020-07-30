@@ -6,13 +6,14 @@ package resolver
 
 import (
 	"errors"
+
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/paxthemax/resolver/pkg/ens"
+	"github.com/ethersphere/resolver/pkg/ens"
 )
 
 const (
-	resolverENS = 0
-	resolverRNS = iota
+	resolverENS uint8 = iota
+	resolverRNS
 )
 
 // Resolver can resolve URIs to addresses, and reverse-resolve addresses to URIs
@@ -52,8 +53,6 @@ func (mr *MultiResolver) RegisterENSResolver(endpoint string) {
 	mr.register(resolverENS, endpoint)
 }
 
-// TODO: register other resolver types
-
 func (mr *MultiResolver) get(resolverType uint8) (resolvers []Resolver) {
 	return mr.resolvers[resolverType]
 }
@@ -63,8 +62,6 @@ func (mr *MultiResolver) GetENSResolvers() (resolvers []Resolver) {
 	return mr.get(resolverENS)
 }
 
-// TODO: get other resolvers
-
 func (mr *MultiResolver) connect(resolverType uint8) (res Resolver, err error) {
 	switch resolverType {
 	case resolverENS:
@@ -73,9 +70,10 @@ func (mr *MultiResolver) connect(resolverType uint8) (res Resolver, err error) {
 				return r, nil
 			}
 		}
-		return nil, errors.New("Could not connect to any endpoint")
+	case resolverRNS:
+		return nil, errors.New("TODO: implement RNS support")
 	}
-	return nil, errors.New("Not implemented") // TODO: how to handle this in an idiomatic way?
+	return nil, errors.New("unknown resolver requested")
 }
 
 // ConnectENS will attempt to connect to the ENS. MultiResolver will try all registered resolvers in the chain, until one connects.

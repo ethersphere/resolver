@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/paxthemax/resolver/cmd/resolver-cli/cmd"
+	"github.com/ethersphere/resolver/cmd/resolver-cli/cmd"
 )
 
 func main() {

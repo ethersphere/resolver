@@ -8,8 +8,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/paxthemax/resolver/pkg/ens"
-	"github.com/paxthemax/resolver/pkg/resolver"
+	"github.com/ethersphere/resolver/pkg/ens"
+	"github.com/ethersphere/resolver/pkg/resolver"
 )
 
 func makeENSResolvers(endpoints []string) (resolvers []resolver.Resolver) {

@@ -8,8 +8,8 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/paxthemax/resolver"
-	"github.com/paxthemax/resolver/cmd/resolver-cli/cmd"
+	"github.com/ethersphere/resolver"
+	"github.com/ethersphere/resolver/cmd/resolver-cli/cmd"
 )
 
 func TestVersionCmd(t *testing.T) {

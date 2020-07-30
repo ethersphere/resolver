@@ -1,4 +1,4 @@
-module github.com/paxthemax/resolver
+module github.com/ethersphere/resolver
 
 go 1.14
 
