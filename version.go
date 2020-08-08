@@ -4,5 +4,5 @@
 
 package resolver
 
-// Version is a manually updated semantic version string.
+// Version is the manually updated semantic version.
 var Version = "v0.1.0"

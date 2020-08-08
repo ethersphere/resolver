@@ -4,6 +4,16 @@
 
 package main
 
+import (
+	"fmt"
+	"os"
+
+	"github.com/ethersphere/resolver/cmd/resolver"
+)
+
 func main() {
-	Execute()
+	if err := resolver.Execute(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %q\n", err)
+		os.Exit(1)
+	}
 }
