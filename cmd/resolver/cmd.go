@@ -55,7 +55,7 @@ Configuration is stored in the "resolver.conf" file. Configuration lookup is
 performed in the following order:
 				
 - File path explicitly passed via --config switch
-- $XDG_CONFIG_HOME/resolver.conf
+- $XDG_CONFIG_HOME/swarm/resolver.conf
 - Local directory resolver.conf`,
 			SilenceErrors: true,
 			SilenceUsage:  true,
@@ -125,8 +125,8 @@ func (cmd *command) initConfig() error {
 
 		// Obtain default config directory. If directory cannot be created, do
 		// not include it in the config search path.
-		// Path should default to "$XDG_CONFIG_HOME/bee/resolver.conf"
-		configPath, err := createPath(cmd.baseConfigDir, "bee", "")
+		// Path should default to "$XDG_CONFIG_HOME/swarm/resolver.conf"
+		configPath, err := createPath(cmd.baseConfigDir, "swarm", "")
 		if err == nil {
 			config.AddConfigPath(configPath)
 		}
