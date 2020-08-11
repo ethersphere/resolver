@@ -5,6 +5,7 @@
 package server
 
 import (
+	"context"
 	"net"
 	"net/http"
 
@@ -20,6 +21,8 @@ var _ Service = (*Server)(nil)
 type Service interface {
 	Address() string
 	Serve() error
+	Close() error
+	Shutdown(ctx context.Context) error
 }
 
 // Server wraps a HTTP server implementation, implementing the server package
@@ -54,17 +57,36 @@ func (s *Server) Address() string {
 
 // Serve will start the HTTP server implementation.
 func (s *Server) Serve() error {
-	s.logger.Infof("starting server on address %q", s.impl.Addr)
+	s.logger.Info("starting server")
 
 	apiService := api.New()
 	s.impl.Handler = apiService
 
 	// Create a net listener for the provided address.
-	apiListener, err := net.Listen("tcp", s.impl.Addr)
+	l, err := net.Listen("tcp", s.impl.Addr)
 	if err != nil {
 		return err
 	}
 
-	// Serve the API.
-	return s.impl.Serve(apiListener)
+	// Start a goroutine to serve the API.
+	go func(srv *Server, ln net.Listener) {
+		srv.logger.Infof("server listening on %q", l.Addr().String())
+		if err := srv.impl.Serve(ln); err != nil {
+			srv.logger.Errorf("failed to serve on address %q: %v", l.Addr().String(), err)
+		}
+	}(s, l)
+
+	return nil
+}
+
+// Close immediately closes any open connections and termintates the server.
+// For a graceful server shutdown, use Shutdown.
+func (s *Server) Close() error {
+	return s.impl.Close()
+}
+
+// Shutdown will gracefully shut down the server without interrupting any
+// active connections.
+func (s *Server) Shutdown(ctx context.Context) error {
+	return s.impl.Shutdown(ctx)
 }

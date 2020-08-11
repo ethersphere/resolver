@@ -5,6 +5,8 @@
 package mock
 
 import (
+	"context"
+
 	"github.com/ethersphere/resolver/pkg/server"
 	"github.com/sirupsen/logrus"
 )
@@ -14,9 +16,13 @@ var _ server.Service = (*Server)(nil)
 
 // Server is the mock server implementation.
 type Server struct {
-	addr     string
-	LogLevel logrus.Level
-	err      error
+	addr        string
+	LogLevel    logrus.Level
+	err         error
+	wasClosed   bool
+	wasShutdown bool
+	closeFn     func() error
+	shutdownFn  func(context.Context) error
 }
 
 // Option applies an option to Server.
@@ -55,6 +61,20 @@ func WithLogLevel(logLevel logrus.Level) Option {
 	}
 }
 
+// WithCloseFn sets the mock Close function implementation.
+func WithCloseFn(fn func() error) Option {
+	return func(s *Server) {
+		s.closeFn = fn
+	}
+}
+
+// WithShutdownFn sets the mock Shutdown function implementation.
+func WithShutdownFn(fn func(context.Context) error) Option {
+	return func(s *Server) {
+		s.shutdownFn = fn
+	}
+}
+
 // Address is the configured mock server addresss.
 func (s *Server) Address() string {
 	return s.addr
@@ -63,4 +83,16 @@ func (s *Server) Address() string {
 // Serve is the mock serve implementation
 func (s *Server) Serve() error {
 	return s.err
+}
+
+// Close is the mock Close implementation.
+func (s *Server) Close() error {
+	s.wasClosed = true
+	return nil
+}
+
+// Shutdown is the mock Shutdown implementation.
+func (s *Server) Shutdown(ctx context.Context) error {
+	s.wasShutdown = true
+	return nil
 }

@@ -37,6 +37,7 @@ type command struct {
 	config        *viper.Viper
 	configPath    string
 	root          *cobra.Command
+	intChan       chan os.Signal
 }
 
 // option is used to apply optional parameters to a command.

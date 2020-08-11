@@ -5,9 +5,14 @@
 package resolver
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
+	"os"
+	"os/signal"
 	"strings"
+	"syscall"
+	"time"
 
 	"github.com/ethersphere/resolver/pkg/server"
 	"github.com/sirupsen/logrus"
@@ -15,6 +20,8 @@ import (
 )
 
 const (
+	shutdownTimeout = 15 * time.Second
+
 	defaultAddress        = ":8080"
 	defaultVerbosityLevel = "info"
 
@@ -41,6 +48,10 @@ Logging verbosity level can be provided as a number or a string:
 			return c.config.BindPFlags(cmd.Flags())
 		},
 	}
+
+	// Initialize the signal channel.
+	c.intChan = make(chan os.Signal, 1)
+	signal.Notify(c.intChan, syscall.SIGINT, syscall.SIGTERM)
 
 	cmd.Flags().String(optionNameAddress, defaultAddress, "address for the server to listen on")
 	cmd.Flags().StringP(optionNameVerbosity, "v", defaultVerbosityLevel, "log verbosity level")
@@ -84,5 +95,37 @@ func (c *command) startRunE(cmd *cobra.Command, args []string) error {
 	}
 
 	// Run the resolver server loop.
-	return c.services.server.Serve()
+	if err := c.services.server.Serve(); err != nil {
+		return err
+	}
+
+	// Wait for interrupts from SIGINT/SIGTERM.
+	// Block the main goroutine until interrupted.
+	sig := <-c.intChan
+
+	logger.Debugf("received signal: %v", sig)
+	logger.Infof("server is shutting down")
+
+	// Handle graceful shutdown.
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+
+		ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
+		defer cancel()
+
+		if err := c.services.server.Shutdown(ctx); err != nil {
+			logger.Errorf("failed to shut down server: %v", err)
+		}
+	}()
+
+	// Allow the forced server close by catching another signal.
+	select {
+	case sig := <-c.intChan:
+		logger.Debugf("received signal: %v", sig)
+		logger.Infof("interrupt received, terminating")
+	case <-done:
+	}
+
+	return nil
 }

@@ -2,6 +2,7 @@ package resolver
 
 import (
 	"io"
+	"os"
 
 	"github.com/ethersphere/resolver/pkg/server"
 	"github.com/ethersphere/resolver/pkg/version"
@@ -20,6 +21,11 @@ var (
 // RootCmd will return the internal root Cobra command.
 func (cmd *Command) RootCmd() *cobra.Command {
 	return cmd.root
+}
+
+// IntChan will return the command interrupt channel.
+func (cmd *Command) IntChan() chan os.Signal {
+	return cmd.intChan
 }
 
 // WithArgs will set the args for the command and pass it to the root Cobra

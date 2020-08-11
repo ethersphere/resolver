@@ -5,7 +5,9 @@
 package resolver_test
 
 import (
+	"bytes"
 	"fmt"
+	"syscall"
 	"testing"
 
 	"github.com/ethersphere/resolver/cmd/resolver"
@@ -22,6 +24,7 @@ func TestStartCommand(t *testing.T) {
 		wantAddr      string
 		wantVerbosity bool
 		verbosity     logrus.Level
+		wantErr       bool
 	}{
 		{
 			desc: "OK - no flags",
@@ -44,6 +47,11 @@ func TestStartCommand(t *testing.T) {
 			wantVerbosity: true,
 			verbosity:     logrus.ErrorLevel,
 		},
+		{
+			desc:    "fail - bad verbosity string",
+			args:    []string{"start", "--version", "asparagus"},
+			wantErr: true,
+		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
@@ -59,13 +67,17 @@ func TestStartCommand(t *testing.T) {
 				mock.WithLogLevel(tC.verbosity),
 			)
 
+			var out bytes.Buffer
 			cmd := newCommand(t,
 				resolver.WithArgs(tC.args...),
+				resolver.WithCmdOut(&out),
 				resolver.WithServerService(svc),
 			)
 
-			if err := cmd.Execute(); err != nil {
-				t.Fatal(err)
+			cmd.IntChan() <- syscall.SIGTERM
+			gotErr := cmd.Execute()
+			if gotErr != nil && !tC.wantErr {
+				t.Fatalf("unexpected error: %v", gotErr)
 			}
 
 			want := svc
@@ -140,11 +152,14 @@ func TestStartCommandVerbosity(t *testing.T) {
 				mock.WithLogLevel(tC.wantLevel),
 			)
 
+			var out bytes.Buffer
 			cmd := newCommand(t,
 				resolver.WithArgs(args...),
+				resolver.WithCmdOut(&out),
 				resolver.WithServerService(svc),
 			)
 
+			cmd.IntChan() <- syscall.SIGTERM
 			if err := cmd.Execute(); err != nil {
 				t.Fatal(err)
 			}
@@ -161,4 +176,25 @@ func TestStartCommandVerbosity(t *testing.T) {
 		})
 
 	}
+}
+
+func TestServerShutdown(t *testing.T) {
+	args := []string{"start", "--verbosity", "info"}
+
+	svc := mock.New(
+		mock.WithLogLevel(logrus.InfoLevel),
+	)
+
+	var out bytes.Buffer
+	cmd := newCommand(t,
+		resolver.WithArgs(args...),
+		resolver.WithCmdOut(&out),
+		resolver.WithServerService(svc),
+	)
+
+	cmd.IntChan() <- syscall.SIGTERM
+	if err := cmd.Execute(); err != nil {
+		t.Fatal(err)
+	}
+
 }
