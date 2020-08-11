@@ -5,16 +5,19 @@
 package server
 
 import (
+	"net"
 	"net/http"
 
 	"github.com/sirupsen/logrus"
+
+	"github.com/ethersphere/resolver/pkg/api"
 )
 
-// Make sure Server implements Interface.
-var _ Interface = (*Server)(nil)
+// Make sure Server implements Service.
+var _ Service = (*Server)(nil)
 
-// Interface is the interface for the server.
-type Interface interface {
+// Service is the interface for the server package.
+type Service interface {
 	Address() string
 	Serve() error
 }
@@ -52,5 +55,16 @@ func (s *Server) Address() string {
 // Serve will start the HTTP server implementation.
 func (s *Server) Serve() error {
 	s.logger.Infof("starting server on address %q", s.impl.Addr)
-	return s.impl.ListenAndServe()
+
+	apiService := api.New()
+	s.impl.Handler = apiService
+
+	// Create a net listener for the provided address.
+	apiListener, err := net.Listen("tcp", s.impl.Addr)
+	if err != nil {
+		return err
+	}
+
+	// Serve the API.
+	return s.impl.Serve(apiListener)
 }

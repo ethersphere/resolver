@@ -6,17 +6,16 @@ package version
 
 import "github.com/ethersphere/resolver"
 
-// Make sure Version implements Interface.
-var _ Interface = (*Version)(nil)
+// Make sure Version implements Service.
+var _ Service = (*Version)(nil)
 
-// Interface is the interface for the Version package.
-type Interface interface {
+// Service is the interface for the version package.
+type Service interface {
 	String() string
 }
 
-// Version returns the semantic version information of the package.
-type Version struct {
-}
+// Version is the implementation of the Version service.
+type Version struct{}
 
 // New returns a new Version service.
 func New() *Version {

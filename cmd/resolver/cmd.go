@@ -24,8 +24,8 @@ func init() {
 
 // services contains all the services that defined commands can invoke.
 type services struct {
-	server  server.Interface
-	version version.Interface
+	server  server.Service
+	version version.Service
 }
 
 // command is the wrapper around a Cobra Command that contains everything that

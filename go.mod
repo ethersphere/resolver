@@ -5,6 +5,7 @@ go 1.14
 require (
 	github.com/adrg/xdg v0.2.1
 	github.com/ethereum/go-ethereum v1.9.18
+	github.com/gorilla/mux v1.7.4
 	github.com/mattn/go-colorable v0.1.2 // indirect
 	github.com/onsi/ginkgo v1.11.0 // indirect
 	github.com/onsi/gomega v1.8.1 // indirect

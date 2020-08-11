@@ -10,7 +10,7 @@ import (
 )
 
 // Make sure mock Server implements server Interface.
-var _ server.Interface = (*Server)(nil)
+var _ server.Service = (*Server)(nil)
 
 // Server is the mock server implementation.
 type Server struct {

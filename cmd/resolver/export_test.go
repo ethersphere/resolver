@@ -60,20 +60,20 @@ func WithCmdOut(w io.Writer) func(*Command) {
 }
 
 // WithServerService will override the Server service implementation.
-func WithServerService(s server.Interface) func(*Command) {
+func WithServerService(s server.Service) func(*Command) {
 	return func(cmd *Command) {
 		cmd.services.server = s
 	}
 }
 
 // WithVersionService will override the Version service implementation.
-func WithVersionService(v version.Interface) func(*Command) {
+func WithVersionService(v version.Service) func(*Command) {
 	return func(cmd *Command) {
 		cmd.services.version = v
 	}
 }
 
 // GetServerService will return the current Server service.
-func (cmd *Command) GetServerService() server.Interface {
+func (cmd *Command) GetServerService() server.Service {
 	return cmd.services.server
 }

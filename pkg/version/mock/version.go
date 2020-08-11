@@ -7,7 +7,7 @@ package mock
 import "github.com/ethersphere/resolver/pkg/version"
 
 // Make sure mock Version implements Version interface.
-var _ version.Interface = (*Version)(nil)
+var _ version.Service = (*Version)(nil)
 
 // Version is the mock versioning implementation.
 type Version struct {
