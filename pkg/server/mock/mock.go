@@ -4,25 +4,27 @@
 
 package mock
 
-import "github.com/ethersphere/resolver/pkg/server"
+import (
+	"github.com/ethersphere/resolver/pkg/server"
+	"github.com/sirupsen/logrus"
+)
 
 // Make sure mock Server implements server Interface.
 var _ server.Interface = (*Server)(nil)
 
 // Server is the mock server implementation.
 type Server struct {
-	addr string
-	err  error
+	addr     string
+	LogLevel logrus.Level
+	err      error
 }
 
 // Option applies an option to Server.
 type Option func(*Server)
 
 // New creates a new mock Server.
-func New(addr string, opts ...Option) *Server {
-	srv := &Server{
-		addr: addr,
-	}
+func New(opts ...Option) *Server {
+	srv := &Server{}
 
 	// Apply all options to the server:
 	for _, o := range opts {
@@ -36,6 +38,20 @@ func New(addr string, opts ...Option) *Server {
 func WithError(err error) Option {
 	return func(s *Server) {
 		s.err = err
+	}
+}
+
+// WithAddress sets the configured mock server address.
+func WithAddress(addr string) Option {
+	return func(s *Server) {
+		s.addr = addr
+	}
+}
+
+// WithLogLevel sets the configured mock server logging verbosity level.
+func WithLogLevel(logLevel logrus.Level) Option {
+	return func(s *Server) {
+		s.LogLevel = logLevel
 	}
 }
 

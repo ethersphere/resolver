@@ -13,7 +13,7 @@ import (
 
 func main() {
 	if err := resolver.Execute(); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %q\n", err)
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
 	}
 }

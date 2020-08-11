@@ -4,7 +4,11 @@
 
 package server
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/sirupsen/logrus"
+)
 
 // Make sure Server implements Interface.
 var _ Interface = (*Server)(nil)
@@ -18,15 +22,23 @@ type Interface interface {
 // Server wraps a HTTP server implementation, implementing the server package
 // interface.
 type Server struct {
-	impl http.Server
+	impl   http.Server
+	logger *logrus.Logger
+}
+
+// Options are the Server options.
+type Options struct {
+	Addr   string
+	Logger *logrus.Logger
 }
 
 // New creates and instantiates a new Server
-func New(addr string) *Server {
+func New(opts Options) *Server {
 	srv := &Server{
 		impl: http.Server{
-			Addr: addr,
+			Addr: opts.Addr,
 		},
+		logger: opts.Logger,
 	}
 
 	return srv
@@ -39,5 +51,6 @@ func (s *Server) Address() string {
 
 // Serve will start the HTTP server implementation.
 func (s *Server) Serve() error {
+	s.logger.Infof("starting server on address %q", s.impl.Addr)
 	return s.impl.ListenAndServe()
 }
