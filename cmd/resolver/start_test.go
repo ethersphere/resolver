@@ -6,7 +6,7 @@ package resolver_test
 
 import (
 	"bytes"
-	"fmt"
+	"strconv"
 	"syscall"
 	"testing"
 
@@ -97,84 +97,56 @@ func TestStartCommand(t *testing.T) {
 	}
 }
 
-func TestStartCommandVerbosity(t *testing.T) {
-	testCases := []struct {
-		level     string
-		wantLevel logrus.Level
-	}{
-		{
-			level:     "0",
-			wantLevel: 0,
-		},
-		{
-			level:     "silent",
-			wantLevel: 0,
-		},
-		{
-			level:     "1",
-			wantLevel: 1,
-		},
-		{
-			level:     "error",
-			wantLevel: 1,
-		},
-		{
-			level:     "2",
-			wantLevel: 2,
-		},
-		{
-			level:     "warn",
-			wantLevel: 2,
-		},
-		{
-			level:     "3",
-			wantLevel: 3,
-		},
-		{
-			level:     "debug",
-			wantLevel: 3,
-		},
-		{
-			level:     "4",
-			wantLevel: 4,
-		},
-		{
-			level:     "trace",
-			wantLevel: 4,
-		},
+func TestStartVerbosity(t *testing.T) {
+	testVerbosity := func(svc *mock.Server, lvl string) {
+		var out bytes.Buffer
+
+		// Test with full verbosity command.
+		args := []string{"start", "--verbosity", lvl}
+
+		cmd := newCommand(t,
+			resolver.WithArgs(args...),
+			resolver.WithCmdOut(&out),
+			resolver.WithServerService(svc),
+		)
+
+		cmd.IntChan() <- syscall.SIGTERM
+		if err := cmd.Execute(); err != nil {
+			t.Fatal(err)
+		}
+
+		// Test with short command.
+		args = []string{"start", "-v", lvl}
+
+		cmd = newCommand(t,
+			resolver.WithArgs(args...),
+			resolver.WithCmdOut(&out),
+			resolver.WithServerService(svc),
+		)
+
+		cmd.IntChan() <- syscall.SIGTERM
+		if err := cmd.Execute(); err != nil {
+			t.Fatal(err)
+		}
 	}
-	for _, tC := range testCases {
-		tDesc := fmt.Sprintf("set verbosity %s", tC.level)
-		t.Run(tDesc, func(t *testing.T) {
-			args := []string{"start", "--verbosity", tC.level}
 
-			svc := mock.New(
-				mock.WithLogLevel(tC.wantLevel),
-			)
+	testSet := map[string]int{
+		"silent": 0,
+		"error":  1,
+		"warn":   2,
+		"info":   3,
+		"debug":  4,
+		"trace":  5,
+	}
 
-			var out bytes.Buffer
-			cmd := newCommand(t,
-				resolver.WithArgs(args...),
-				resolver.WithCmdOut(&out),
-				resolver.WithServerService(svc),
-			)
+	for lvlStr, lvlNum := range testSet {
+		l := (logrus.Level)(lvlNum)
+		svc := mock.New(
+			mock.WithLogLevel(l),
+		)
 
-			cmd.IntChan() <- syscall.SIGTERM
-			if err := cmd.Execute(); err != nil {
-				t.Fatal(err)
-			}
-
-			want := svc
-			got, ok := cmd.GetServerService().(*mock.Server)
-			if !ok {
-				t.Fatalf("test error: could not convert mock server")
-			}
-
-			if want.LogLevel != got.LogLevel {
-				t.Errorf("server log verbosity mismatch: want %q, got %q", want.LogLevel, got.LogLevel)
-			}
-		})
-
+		testVerbosity(svc, lvlStr)
+		testVerbosity(svc, strconv.Itoa(lvlNum))
 	}
 }
 
