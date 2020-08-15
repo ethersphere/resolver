@@ -3,12 +3,19 @@ module github.com/ethersphere/resolver
 go 1.14
 
 require (
+	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/adrg/xdg v0.2.1
-	github.com/ethereum/go-ethereum v1.9.18
+	github.com/aristanetworks/goarista v0.0.0-20200812190859-4cb0e71f3c0e // indirect
+	github.com/ethereum/go-ethereum v1.9.19
 	github.com/ethersphere/bee v0.1.0
+	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/gorilla/mux v1.7.4
-	github.com/sirupsen/logrus v1.4.2
+	github.com/shirou/gopsutil v2.20.7+incompatible // indirect
+	github.com/sirupsen/logrus v1.6.0
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.7.1
 	github.com/wealdtech/go-ens/v3 v3.4.3
+	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de // indirect
+	golang.org/x/sys v0.0.0-20200814200057-3d37ad5750ed // indirect
+	resenje.org/web v0.4.4
 )

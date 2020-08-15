@@ -59,7 +59,7 @@ func (s *Server) Address() string {
 func (s *Server) Serve() error {
 	s.logger.Info("starting server")
 
-	apiService := api.New()
+	apiService := api.New(s.logger)
 	s.impl.Handler = apiService
 
 	// Create a net listener for the provided address.

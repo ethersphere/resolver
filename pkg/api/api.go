@@ -4,7 +4,11 @@
 
 package api
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/ethersphere/bee/pkg/logging"
+)
 
 // Service is the interface for the api package.
 type Service interface {
@@ -15,11 +19,14 @@ type Service interface {
 // API wraps an http handler.
 type API struct {
 	http.Handler
+	logger logging.Logger
 }
 
 // New will return a new API instance.
-func New() Service {
-	a := &API{}
+func New(logger logging.Logger) Service {
+	a := &API{
+		logger: logger,
+	}
 
 	a.setupRouting()
 
