@@ -71,8 +71,9 @@ func (s *Server) Serve() error {
 	// Start a goroutine to serve the API.
 	go func(srv *Server, ln net.Listener) {
 		srv.logger.Infof("server listening on %q", l.Addr().String())
-		if err := srv.impl.Serve(ln); err != nil {
-			srv.logger.Errorf("failed to serve on address %q: %v", l.Addr().String(), err)
+		if err := srv.impl.Serve(ln); err != nil && err != http.ErrServerClosed {
+			srv.logger.Debugf("server on address %q: %v", l.Addr(), err)
+			srv.logger.Error("failed to run server")
 		}
 	}(s, l)
 
