@@ -32,7 +32,7 @@ type Option func(*Server)
 func New(opts ...Option) *Server {
 	srv := &Server{}
 
-	// Apply all options to the server:
+	// Apply all options to the Server.
 	for _, o := range opts {
 		o(srv)
 	}

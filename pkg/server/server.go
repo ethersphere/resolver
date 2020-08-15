@@ -9,7 +9,7 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/sirupsen/logrus"
+	"github.com/ethersphere/bee/pkg/logging"
 
 	"github.com/ethersphere/resolver/pkg/api"
 )
@@ -29,13 +29,13 @@ type Service interface {
 // interface.
 type Server struct {
 	impl   http.Server
-	logger *logrus.Logger
+	logger logging.Logger
 }
 
 // Options are the Server options.
 type Options struct {
 	Addr   string
-	Logger *logrus.Logger
+	Logger logging.Logger
 }
 
 // New creates and instantiates a new Server

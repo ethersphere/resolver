@@ -14,9 +14,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/ethersphere/resolver/pkg/server"
+	"github.com/ethersphere/bee/pkg/logging"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+
+	"github.com/ethersphere/resolver/pkg/server"
 )
 
 const (
@@ -60,30 +62,22 @@ Logging verbosity level can be provided as a number or a string:
 
 func (c *command) startRunE(cmd *cobra.Command, args []string) error {
 
-	// TODO: configure logger verbosity, extract logging package, add metrics?
-	logger := logrus.New()
-	logger.SetOutput(cmd.OutOrStdout())
-
+	var logger logging.Logger
 	switch v := strings.ToLower(c.config.GetString(optionNameVerbosity)); v {
 	case "0", "silent":
-		logger.SetLevel(0)
-		logger.SetOutput(ioutil.Discard)
+		logger = logging.New(ioutil.Discard, 0)
 	case "1", "error":
-		logger.SetLevel(logrus.ErrorLevel)
+		logger = logging.New(cmd.OutOrStdout(), logrus.ErrorLevel)
 	case "2", "warn":
-		logger.SetLevel(logrus.WarnLevel)
+		logger = logging.New(cmd.OutOrStdout(), logrus.WarnLevel)
 	case "3", "info":
-		logger.SetLevel(logrus.InfoLevel)
+		logger = logging.New(cmd.OutOrStdout(), logrus.InfoLevel)
 	case "4", "debug":
-		logger.SetLevel(logrus.DebugLevel)
+		logger = logging.New(cmd.OutOrStdout(), logrus.DebugLevel)
 	case "5", "trace":
-		logger.SetLevel(logrus.TraceLevel)
+		logger = logging.New(cmd.OutOrStdout(), logrus.TraceLevel)
 	default:
 		return fmt.Errorf("Cannot set verbosity to %q", v)
-	}
-
-	logger.Formatter = &logrus.TextFormatter{
-		FullTimestamp: true,
 	}
 
 	// If no service is injected, create a new Server service.
