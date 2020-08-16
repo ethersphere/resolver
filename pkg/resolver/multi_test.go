@@ -5,7 +5,6 @@
 package resolver_test
 
 import (
-	"errors"
 	"fmt"
 	"reflect"
 	"testing"
@@ -17,22 +16,8 @@ import (
 
 type Address = common.Address
 
-var (
-	tErr  = errors.New("test resolve error")
-	noAdr = Address{}
-	tAdr1 = newAddr("deadbeef")
-	tAdr2 = newAddr("beefdead")
-)
-
 func newAddr(s string) Address {
 	return common.BytesToAddress([]byte(s))
-}
-
-func newResolver(adr Address, err error) resolver.Interface {
-	return mock.NewResolver(
-		mock.WithResolveFunc(
-			func(string) (common.Address, error) { return adr, err }),
-	)
 }
 
 func TestWithForceDefault(t *testing.T) {
@@ -97,7 +82,9 @@ func TestPopResolver(t *testing.T) {
 	})
 
 	t.Run("ok on regular tld", func(t *testing.T) {
-		mr.PushResolver(tld, mock.NewResolver())
+		if err := mr.PushResolver(tld, mock.NewResolver()); err != nil {
+			t.Fatal(err)
+		}
 		err := mr.PopResolver(tld)
 		if err != nil {
 			t.Error(err)

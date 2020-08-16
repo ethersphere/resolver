@@ -11,10 +11,6 @@ import (
 	"github.com/ethersphere/resolver/pkg/resolver"
 )
 
-func GetDialFunc(cl *Client) func(ep string) (*ethclient.Client, error) {
-	return cl.dialFn
-}
-
 // WithDialFunc will set the Dial function implementaton.
 func WithDialFunc(fn func(ep string) (*ethclient.Client, error)) Option {
 	return func(c *Client) {
