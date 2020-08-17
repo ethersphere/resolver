@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package resolver_test
+package cmd_test
 
 import (
 	"bytes"
 	"strings"
 	"testing"
 
-	"github.com/ethersphere/resolver/cmd/resolver"
+	"github.com/ethersphere/resolver/cmd/resolver/cmd"
 )
 
 func TestRootCmdHelp(t *testing.T) {
@@ -33,16 +33,16 @@ func TestRootCmdHelp(t *testing.T) {
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
 			var testOutBuf bytes.Buffer
-			cmd := newCommand(t,
-				resolver.WithArgs(tC.args),
-				resolver.WithCmdOut(&testOutBuf),
+			c := newCommand(t,
+				cmd.WithArgs(tC.args),
+				cmd.WithCmdOut(&testOutBuf),
 			)
 
-			if err := cmd.Execute(); err != nil {
+			if err := c.Execute(); err != nil {
 				t.Fatal(err)
 			}
 
-			want := cmd.RootCmd().Long
+			want := c.RootCmd().Long
 			got := testOutBuf.String()
 
 			if !strings.Contains(got, want) {

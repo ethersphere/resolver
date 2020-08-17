@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package resolver
+package cmd
 
 import (
 	"errors"
@@ -88,12 +88,12 @@ func (cmd *command) Execute() error {
 // Execute adds all child commands to the root command and sets all the flags
 // appropriately. This only needs to be invoked once in main().
 func Execute() error {
-	cmd, err := newCommand()
+	c, err := newCommand()
 	if err != nil {
 		return err
 	}
 
-	return cmd.Execute()
+	return c.Execute()
 }
 
 // initGlobalFlags will initialize all persistent flags on the root Cobra

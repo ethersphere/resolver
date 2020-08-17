@@ -1,13 +1,13 @@
 // Copyright 2020 The Swarm Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
-package resolver_test
+package cmd_test
 
 import (
 	"bytes"
 	"testing"
 
-	"github.com/ethersphere/resolver/cmd/resolver"
+	"github.com/ethersphere/resolver/cmd/resolver/cmd"
 	"github.com/ethersphere/resolver/pkg/version/mock"
 )
 
@@ -16,13 +16,13 @@ func TestVersionCmd(t *testing.T) {
 	const testVersionString = "TEST TEST TEST"
 	var testOutBuf bytes.Buffer
 
-	cmd := newCommand(t,
-		resolver.WithArgs(testArgs),
-		resolver.WithCmdOut(&testOutBuf),
-		resolver.WithVersionService(mock.New(testVersionString)),
+	c := newCommand(t,
+		cmd.WithArgs(testArgs),
+		cmd.WithCmdOut(&testOutBuf),
+		cmd.WithVersionService(mock.New(testVersionString)),
 	)
 
-	if err := cmd.Execute(); err != nil {
+	if err := c.Execute(); err != nil {
 		t.Fatal(err)
 	}
 

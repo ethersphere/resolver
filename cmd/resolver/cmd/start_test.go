@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package resolver_test
+package cmd_test
 
 import (
 	"bytes"
@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"testing"
 
-	"github.com/ethersphere/resolver/cmd/resolver"
+	"github.com/ethersphere/resolver/cmd/resolver/cmd"
 	"github.com/ethersphere/resolver/pkg/server/mock"
 	"github.com/sirupsen/logrus"
 )
@@ -68,20 +68,20 @@ func TestStartCommand(t *testing.T) {
 			)
 
 			var out bytes.Buffer
-			cmd := newCommand(t,
-				resolver.WithArgs(tC.args...),
-				resolver.WithCmdOut(&out),
-				resolver.WithServerService(svc),
+			c := newCommand(t,
+				cmd.WithArgs(tC.args...),
+				cmd.WithCmdOut(&out),
+				cmd.WithServerService(svc),
 			)
 
-			cmd.IntChan() <- syscall.SIGTERM
-			gotErr := cmd.Execute()
+			c.IntChan() <- syscall.SIGTERM
+			gotErr := c.Execute()
 			if gotErr != nil && !tC.wantErr {
 				t.Fatalf("unexpected error: %v", gotErr)
 			}
 
 			want := svc
-			got, ok := cmd.GetServerService().(*mock.Server)
+			got, ok := c.GetServerService().(*mock.Server)
 			if !ok {
 				t.Fatalf("test error: could not convert mock server")
 			}
@@ -104,28 +104,28 @@ func TestStartVerbosity(t *testing.T) {
 		// Test with full verbosity command.
 		args := []string{"start", "--verbosity", lvl}
 
-		cmd := newCommand(t,
-			resolver.WithArgs(args...),
-			resolver.WithCmdOut(&out),
-			resolver.WithServerService(svc),
+		c := newCommand(t,
+			cmd.WithArgs(args...),
+			cmd.WithCmdOut(&out),
+			cmd.WithServerService(svc),
 		)
 
-		cmd.IntChan() <- syscall.SIGTERM
-		if err := cmd.Execute(); err != nil {
+		c.IntChan() <- syscall.SIGTERM
+		if err := c.Execute(); err != nil {
 			t.Fatal(err)
 		}
 
 		// Test with short command.
 		args = []string{"start", "-v", lvl}
 
-		cmd = newCommand(t,
-			resolver.WithArgs(args...),
-			resolver.WithCmdOut(&out),
-			resolver.WithServerService(svc),
+		c = newCommand(t,
+			cmd.WithArgs(args...),
+			cmd.WithCmdOut(&out),
+			cmd.WithServerService(svc),
 		)
 
-		cmd.IntChan() <- syscall.SIGTERM
-		if err := cmd.Execute(); err != nil {
+		c.IntChan() <- syscall.SIGTERM
+		if err := c.Execute(); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -158,14 +158,14 @@ func TestServerShutdown(t *testing.T) {
 	)
 
 	var out bytes.Buffer
-	cmd := newCommand(t,
-		resolver.WithArgs(args...),
-		resolver.WithCmdOut(&out),
-		resolver.WithServerService(svc),
+	c := newCommand(t,
+		cmd.WithArgs(args...),
+		cmd.WithCmdOut(&out),
+		cmd.WithServerService(svc),
 	)
 
-	cmd.IntChan() <- syscall.SIGTERM
-	if err := cmd.Execute(); err != nil {
+	c.IntChan() <- syscall.SIGTERM
+	if err := c.Execute(); err != nil {
 		t.Fatal(err)
 	}
 

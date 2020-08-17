@@ -8,11 +8,11 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ethersphere/resolver/cmd/resolver"
+	"github.com/ethersphere/resolver/cmd/resolver/cmd"
 )
 
 func main() {
-	if err := resolver.Execute(); err != nil {
+	if err := cmd.Execute(); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
 	}

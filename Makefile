@@ -16,7 +16,7 @@ all: build lint vet test binary
 binary: export CGO_ENABLED=0
 binary: dist
 	$(GO) version
-	$(GO) build -trimpath -ldflags "$(LDFLAGS)" -o dist/$(BINARY) ./cmd/
+	$(GO) build -trimpath -ldflags "$(LDFLAGS)" -o dist/$(BINARY) ./cmd/resolver
 
 dist:
 	mkdir $@
