@@ -63,3 +63,23 @@ func TestBaseTestDirs(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestDefaultConfigPath(t *testing.T) {
+	c := newCommand(t,
+		// Use a noop root command runner to ensure the configuration directory
+		// is created.
+		cmd.WitCmdNoopRun(),
+		// We need to override args because tests manipulate STDIN!
+		cmd.WithArgs(""),
+		cmd.WithCmdOut(ioutil.Discard),
+	)
+	if err := c.Execute(); err != nil {
+		t.Fatal(err)
+	}
+
+	want := filepath.Join(baseConfigDir, "swarm", "resolver")
+	got := c.ConfigPath()
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}

@@ -35,8 +35,9 @@ type command struct {
 	services      services
 	baseConfigDir string
 	config        *viper.Viper
-	configPath    string
+	configDir     string
 	root          *cobra.Command
+	rootRunE      func(*cobra.Command, []string) error
 	intChan       chan os.Signal
 }
 
@@ -52,12 +53,13 @@ func newCommand(opts ...option) (cmd *command, err error) {
 			Short: "Swarm address resolver",
 			Long: `Swarm resolver performs name resolution for the swarm bee.
 
-Configuration is stored in the "resolver.conf" file. Configuration lookup is
+Configuration is stored in the "config.yaml" file. Configuration lookup is
 performed in the following order:
 				
 - File path explicitly passed via --config switch
-- $XDG_CONFIG_HOME/swarm/resolver.conf
-- Local directory resolver.conf`,
+- swarm/resolver/config.yaml in the standard user config directory 
+    - eg. "~/.config/swarm/resolver/config.yaml" on Linux
+- Working directory config.yaml`,
 			SilenceErrors: true,
 			SilenceUsage:  true,
 			PersistentPreRunE: func(_ *cobra.Command, _ []string) error {
@@ -76,6 +78,11 @@ performed in the following order:
 	// Initialize all commands.
 	cmd.initStartCommand()
 	cmd.initVersionCmd()
+
+	// Override for the root command RunE (used for tests).
+	if cmd.rootRunE != nil {
+		cmd.root.RunE = cmd.rootRunE
+	}
 
 	return cmd, nil
 }
@@ -101,24 +108,24 @@ func Execute() error {
 func (cmd *command) initGlobalFlags() {
 	flags := cmd.root.PersistentFlags()
 
-	flags.StringVar(&cmd.configPath, "config", "", "path to the config file")
+	flags.StringVar(&cmd.configDir, "config", "", "path to the config file")
 }
 
 // initConfig will load the configuration from the config file and environment
 // and load it into Viper.
 func (cmd *command) initConfig() error {
 	config := viper.New()
-	configName := "resolver.conf"
+	configName := "config.yaml"
 
-	// Set the system base config directory (eg. $XDG_CONFIG_HOME).
+	// Set the system base config directory (eg. $XDG_CONFIG_HOME on linux).
 	if cmd.baseConfigDir == "" {
 		cmd.baseConfigDir = xdg.ConfigHome
 	}
 
 	// Set the config path:
-	if cmd.configPath != "" {
+	if cmd.configDir != "" {
 		// Config file was explicitly passed via a flag, use it.
-		config.SetConfigFile(cmd.configPath)
+		config.SetConfigFile(cmd.configDir)
 	} else {
 		// Set the name and type of config file to search for.
 		config.SetConfigName(configName)
@@ -126,11 +133,13 @@ func (cmd *command) initConfig() error {
 
 		// Obtain default config directory. If directory cannot be created, do
 		// not include it in the config search path.
-		// Path should default to "$XDG_CONFIG_HOME/swarm/resolver.conf"
-		configPath, err := createPath(cmd.baseConfigDir, "swarm", "")
+		// Path should default to "$XDG_CONFIG_HOME/swarm/resolver/config.yaml"
+		configPath, err := createPath(cmd.baseConfigDir, "swarm", "resolver", "")
 		if err == nil {
 			config.AddConfigPath(configPath)
 		}
+
+		cmd.configDir = configPath
 	}
 
 	// Load the environment:
@@ -157,7 +166,7 @@ func (cmd *command) initConfig() error {
 }
 
 func createPath(name ...string) (string, error) {
-	path := filepath.Dir(filepath.Join(name...))
+	path := filepath.Join(name...)
 	err := os.MkdirAll(path, os.ModeDir|0700)
 
 	return path, err
