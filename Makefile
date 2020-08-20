@@ -37,6 +37,10 @@ vet:
 test:
 	$(GO) test -v ./...
 
+.PHONY: test-integration
+test-integration:
+	$(GO) test -tags=integration -v ./...
+
 .PHONY: build
 build: export CGO_ENABLED=0
 build:
