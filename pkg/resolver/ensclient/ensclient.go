@@ -34,12 +34,15 @@ type Client struct {
 type Option func(*Client)
 
 func wrapDial(ep string) (*ethclient.Client, error) {
+
+	// Open a connection to the ethereum node through the endpoint.
 	cl, err := ethclient.Dial(ep)
 	if err != nil {
 		return nil, err
 	}
 
-	// Attempt to connect to the ENS resolver.
+	// Ensure the ENS resolver contract is deployed on the network we are now
+	// connected to.
 	if _, err := ens.PublicResolverAddress(cl); err != nil {
 		return nil, err
 	}
