@@ -5,11 +5,11 @@
 package resolver
 
 import (
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethersphere/bee/pkg/swarm"
 )
 
-// Address is an Ethereum address.
-type Address = common.Address
+// Address is the swarm bzz address.
+type Address = swarm.Address
 
 // Interface can resolve an URL into an associated Ethereum address.
 type Interface interface {

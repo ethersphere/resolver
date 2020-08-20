@@ -7,12 +7,12 @@ package mock
 import (
 	"fmt"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethersphere/bee/pkg/swarm"
 	"github.com/ethersphere/resolver/pkg/resolver"
 )
 
-// Address is the Ethereum address.
-type Address = common.Address
+// Address is the swarm bzz address.
+type Address = swarm.Address
 
 // Assure mock Resolver implements the Resolver interface.
 var _ resolver.Interface = (*Resolver)(nil)

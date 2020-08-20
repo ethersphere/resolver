@@ -9,15 +9,15 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethersphere/bee/pkg/swarm"
 	"github.com/ethersphere/resolver/pkg/resolver"
 	"github.com/ethersphere/resolver/pkg/resolver/mock"
 )
 
-type Address = common.Address
+type Address = swarm.Address
 
 func newAddr(s string) Address {
-	return common.BytesToAddress([]byte(s))
+	return swarm.NewAddress([]byte(s))
 }
 
 func TestWithForceDefault(t *testing.T) {
@@ -213,7 +213,7 @@ func TestResolve(t *testing.T) {
 					t.Fatalf("got %v, want %v", err, tC.wantErr)
 				}
 			}
-			if adr != tC.wantAdr {
+			if !adr.Equal(tC.wantAdr) {
 				t.Errorf("got %q, want %q", adr, tC.wantAdr)
 			}
 		})

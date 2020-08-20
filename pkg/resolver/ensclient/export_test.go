@@ -6,7 +6,6 @@ package ensclient
 
 import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethersphere/resolver/pkg/resolver"
 )
@@ -31,20 +30,20 @@ func WithNoopDialFunc() Option {
 }
 
 // WithResolveFunc will set the Resolve function implementation.
-func WithResolveFunc(fn func(backend bind.ContractBackend, input string) (common.Address, error)) Option {
+func WithResolveFunc(fn func(backend bind.ContractBackend, input string) (string, error)) Option {
 	return func(c *Client) {
 		c.resolveFn = fn
 	}
 }
 
 func WithErrorResolveFunc(err error) Option {
-	return WithResolveFunc(func(backend bind.ContractBackend, input string) (common.Address, error) {
-		return resolver.Address{}, err
+	return WithResolveFunc(func(backend bind.ContractBackend, input string) (string, error) {
+		return "", err
 	})
 }
 
 func WithAdrResolveFunc(adr resolver.Address) Option {
-	return WithResolveFunc(func(backend bind.ContractBackend, input string) (common.Address, error) {
-		return adr, nil
+	return WithResolveFunc(func(backend bind.ContractBackend, input string) (string, error) {
+		return adr.String(), nil
 	})
 }
