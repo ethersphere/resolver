@@ -15,7 +15,7 @@ require (
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.7.1
 	github.com/wealdtech/go-ens/v3 v3.4.3
-	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de // indirect
-	golang.org/x/sys v0.0.0-20200814200057-3d37ad5750ed // indirect
+	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a // indirect
+	golang.org/x/sys v0.0.0-20200820212457-1fb795427249 // indirect
 	resenje.org/web v0.4.4
 )

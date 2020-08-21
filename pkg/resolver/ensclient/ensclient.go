@@ -128,3 +128,9 @@ func (c *Client) Resolve(name string) (Address, error) {
 	// Trim the prefix and try to parse the result as a bzz address.
 	return swarm.ParseHexAddress(strings.TrimPrefix(hash, "/swarm/"))
 }
+
+// Close closes the RPC connection with the client, terminating all unfinished
+// requests.
+func (c *Client) Close() {
+	c.ethCl.Close()
+}

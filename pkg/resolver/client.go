@@ -9,4 +9,5 @@ package resolver
 type Client interface {
 	Interface
 	Connect(endpoint string) error
+	Close()
 }
