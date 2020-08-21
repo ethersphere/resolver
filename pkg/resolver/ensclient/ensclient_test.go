@@ -8,7 +8,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/ethersphere/resolver/pkg/resolver"
+	"github.com/ethersphere/bee/pkg/swarm"
 	ec "github.com/ethersphere/resolver/pkg/resolver/ensclient"
 )
 
@@ -59,6 +59,9 @@ func TestConnect(t *testing.T) {
 
 func TestResolve(t *testing.T) {
 	name := "hello"
+	bzzAddress := swarm.MustParseHexAddress(
+		"6f4eeb99d0a144d78ac33cf97091a59a6291aa78929938defcf967e74326e08b",
+	)
 
 	t.Run("no resolve func error", func(t *testing.T) {
 		c := ec.NewClient(
@@ -89,7 +92,7 @@ func TestResolve(t *testing.T) {
 	t.Run("ok", func(t *testing.T) {
 		c := ec.NewClient(
 			ec.WithNoopDialFunc(),
-			ec.WithAdrResolveFunc(resolver.Address{}),
+			ec.WithAdrResolveFunc(bzzAddress),
 		)
 
 		if err := c.Connect(name); err != nil {
@@ -100,7 +103,7 @@ func TestResolve(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		want := (resolver.Address{}).String()
+		want := bzzAddress.String()
 		got := adr.String()
 		if got != want {
 			t.Errorf("got %q, want %q", got, want)

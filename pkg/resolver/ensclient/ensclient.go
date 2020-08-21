@@ -54,8 +54,29 @@ func wrapDial(ep string) (*ethclient.Client, error) {
 }
 
 func wrapResolve(backend bind.ContractBackend, name string) (string, error) {
-	ethAdr, err := ens.Resolve(backend, name)
-	return ethAdr.Hash().String(), err
+
+	// Connect to the ENS resolver for the provided name.
+	ensR, err := ens.NewResolver(backend, name)
+	if err != nil {
+		return "", err
+	}
+
+	// Try and read out the content hash record.
+	ch, err := ensR.Contenthash()
+	if err != nil {
+		return "", err
+	}
+
+	adr, err := ens.ContenthashToString(ch)
+	if err != nil {
+		return "", err
+	}
+
+	// Content hash strings for swarm are prepended with "/swarm/", we must
+	// remove the prefix to get the bzz address hex string.
+	adr = adr[7:]
+
+	return adr, nil
 }
 
 // NewClient will return a new Client.
@@ -99,6 +120,5 @@ func (c *Client) Resolve(name string) (Address, error) {
 		return swarm.ZeroAddress, err
 	}
 
-	// Try and parse the raw address from the contract into a swarm address.
 	return swarm.ParseHexAddress(hash)
 }

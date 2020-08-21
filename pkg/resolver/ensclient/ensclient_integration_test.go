@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// +build integraton
+// +build integration
 
 package ensclient_test
 
@@ -14,7 +14,8 @@ import (
 )
 
 func TestEnsclientIntegration(t *testing.T) {
-	defaultEndpoint := "https://cloudflare-eth.com"
+	// TODO: consider using a stable gateway instead of INFURA.
+	defaultEndpoint := "https://goerli.infura.io/v3/59d83a5a4be74f86b9851190c802297b"
 
 	testCases := []struct {
 		desc            string
@@ -30,14 +31,29 @@ func TestEnsclientIntegration(t *testing.T) {
 			wantFailConnect: true,
 		},
 		{
-			desc:            "bad name",
-			name:            "iamaverybadname",
+			desc:            "no domain",
+			name:            "idonthaveadomain",
 			wantFailResolve: true,
 		},
 		{
-			desc:    "regular name",
-			name:    "nickjohnson.eth",
-			wantAdr: "0xb8c2c29ee19d8307cb7255e1cd9cbde883a267d5",
+			desc:            "no eth domain",
+			name:            "centralized.com",
+			wantFailResolve: true,
+		},
+		{
+			desc:            "not registered",
+			name:            "unused.test.swarm.eth",
+			wantFailResolve: true,
+		},
+		{
+			desc:            "no content hash",
+			name:            "nocontent.resolver.test.swarm.eth",
+			wantFailResolve: true,
+		},
+		{
+			desc:    "ok",
+			name:    "example.resolver.test.swarm.eth",
+			wantAdr: "00cb23598c2e520b6a6aae3ddc94fed4435a2909690bdd709bf9d9e7c2aadfad",
 		},
 	}
 	for _, tC := range testCases {
