@@ -6,6 +6,7 @@ package ensclient
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -72,10 +73,6 @@ func wrapResolve(backend bind.ContractBackend, name string) (string, error) {
 		return "", err
 	}
 
-	// Content hash strings for swarm are prepended with "/swarm/", we must
-	// remove the prefix to get the bzz address hex string.
-	adr = adr[7:]
-
 	return adr, nil
 }
 
@@ -115,10 +112,19 @@ func (c *Client) Resolve(name string) (Address, error) {
 	if c.resolveFn == nil {
 		return swarm.ZeroAddress, errors.New("no resolve function implementation")
 	}
+
+	// Retrieve the content hash from ENS.
 	hash, err := c.resolveFn(c.ethCl, name)
 	if err != nil {
 		return swarm.ZeroAddress, err
 	}
 
-	return swarm.ParseHexAddress(hash)
+	// Ensure that the content hash string is in a valid format, eg.
+	// "/swarm/<address>".
+	if !strings.HasPrefix(hash, "/swarm/") {
+		return swarm.ZeroAddress, errors.New("ENS contenthash invalid")
+	}
+
+	// Trim the prefix and try to parse the result as a bzz address.
+	return swarm.ParseHexAddress(strings.TrimPrefix(hash, "/swarm/"))
 }

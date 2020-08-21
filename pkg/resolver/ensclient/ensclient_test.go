@@ -89,10 +89,26 @@ func TestResolve(t *testing.T) {
 		}
 	})
 
+	t.Run("resolved without address prefix error", func(t *testing.T) {
+		c := ec.NewClient(
+			ec.WithNoopDialFunc(),
+			ec.WithNoprefixAdrResolveFunc(bzzAddress),
+		)
+
+		if err := c.Connect(name); err != nil {
+			t.Fatal(err)
+		}
+
+		_, err := c.Resolve(name)
+		if err == nil {
+			t.Error("expected error")
+		}
+	})
+
 	t.Run("ok", func(t *testing.T) {
 		c := ec.NewClient(
 			ec.WithNoopDialFunc(),
-			ec.WithAdrResolveFunc(bzzAddress),
+			ec.WithValidAdrResolveFunc(bzzAddress),
 		)
 
 		if err := c.Connect(name); err != nil {
